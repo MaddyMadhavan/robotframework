@@ -2,9 +2,9 @@
 Library  Telnet
 Library  OperatingSystem
 Library  Dialogs
+Suite Teardown	Cleanall
 
 *** Variables ***
-${CTRL_C}
 
 *** Test Cases ***
 Telnet login78
@@ -30,11 +30,14 @@ Auth dhchap
         [Tags]                  test3
 	Write			authutil --set -a dhchap
 	${out}			Read Until Prompt
-	Should Match Regexp	${out}	Authentication is set to dhchap.
+	${new}			Should Match Regexp	${out}	Authentication is set to dhchap.
+	Set Global Variable	${new}
 
 Set dhchap
         [Documentation]         Setting the secret key...
         [Tags]                  test4
+	[Teardown]		Mybug
+	Run Keyword if		'${PREV TEST STATUS}'=='PASS'	Pass Execution	dhchap already set.
 	Write			secauthsecret --set
 	Read Until		secrets >
 	${new_line}		Evaluate	chr(int(13))
@@ -95,4 +98,10 @@ dhchap remove
 	Read Until Prompt
 
 *** Keywords ***
+Cleanall
+	Close All Connections
 
+Mybug
+        Set Prompt              (root>)         prompt_is_regexp=yes
+        ${CTRL_C}               Evaluate                chr(int(3))
+	Run Keyword If Test Failed	Write Bare	${CTRL_C}
