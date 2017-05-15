@@ -1,9 +1,11 @@
 *** Settings ***
 Library  add.py
+Library  BuiltIn
 
 *** Test Cases ***
 Ret
-	[Documentation]		Get the return value from the add function
+	[Documentation]		Check the expected value from the addition function
 	[Tags]			test1
 	${res}	Add
-	Log	${res}
+	${str}  Convert to String	${res}
+	Should Be Equal		${str}	30
