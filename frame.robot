@@ -1,9 +1,9 @@
 *** Settings ***
-Library  hello.py
+Library  add.py
 
 *** Test Cases ***
-Hello
-	[Documentation]		Robot framework hello world program
+Ret
+	[Documentation]		Get the return value from the add function
 	[Tags]			test1
-	Hello
-
+	${res}	Add
+	Log	${res}

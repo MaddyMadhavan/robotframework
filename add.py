@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
-def hello():
-	print "Hello World"
+def add():
+	return 10 + 20
 
 if __name__=='__main__':
-	hello()
+	add()
