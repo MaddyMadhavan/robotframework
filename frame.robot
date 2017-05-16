@@ -2,23 +2,12 @@
 Library  Telnet
 Library  OperatingSystem
 Library  Dialogs
+Suite Setup	Init
 Suite Teardown	Cleanall
 
 *** Variables ***
 
 *** Test Cases ***
-Telnet login78
-        [Documentation]         This is telnet login testing...
-        [Tags]                  test1
-        Open Connection         10.38.18.78
-        Login                   root                    password
-        Set Prompt              (root>)         prompt_is_regexp=yes
-        ${CTRL_C}               Evaluate                chr(int(3))
-        Set Timeout             10s
-        Sleep                   5s
-        Write Bare              ${CTRL_C}
-        Read Until Prompt
-
 Auth show
         [Documentation]         Showing the authentication details...
         [Tags]                  test2
@@ -98,10 +87,23 @@ dhchap remove
 	Read Until Prompt
 
 *** Keywords ***
+Init
+        [Documentation]         This is telnet login testing...
+        [Tags]                  test1
+        Open Connection         10.38.18.78
+        Login                   root                    password
+        Set Prompt              (root>)         prompt_is_regexp=yes
+        ${CTRL_C}               Evaluate                chr(int(3))
+        Set Timeout             10s
+	Sleep			5s
+	Write Bare		${CTRL_C}
+        Read Until Prompt
+
 Cleanall
-	Close All Connections
+	Run Keyword	Close All Connections
 
 Mybug
         Set Prompt              (root>)         prompt_is_regexp=yes
         ${CTRL_C}               Evaluate                chr(int(3))
 	Run Keyword If Test Failed	Write Bare	${CTRL_C}
+
