@@ -2,6 +2,7 @@
 Library  Telnet
 Library  OperatingSystem
 Library  Dialogs
+Library  Screenshot
 Suite Setup	Init
 Suite Teardown	Cleanall
 
@@ -101,6 +102,7 @@ Init
 
 Cleanall
 	Run Keyword	Close All Connections
+	Run Keyword	Take Screenshot		mypic
 
 Mybug
         Set Prompt              (root>)         prompt_is_regexp=yes
