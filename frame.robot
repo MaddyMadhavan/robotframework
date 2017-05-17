@@ -3,6 +3,7 @@ Library  Telnet
 Library  OperatingSystem
 Library  Dialogs
 Library  Screenshot
+Library  String
 Suite Setup	Init
 Suite Teardown	Cleanall
 
@@ -26,8 +27,8 @@ Auth dhchap
 Set dhchap
         [Documentation]         Setting the secret key...
         [Tags]                  test4
-	[Teardown]		Mybug
-	Run Keyword if		'${PREV TEST STATUS}'=='PASS'	Pass Execution	dhchap already set.
+	[Teardown]		Terminate	
+	Pass Execution If	'${PREV TEST STATUS}'=='PASS'	dhchap already set.
 	Write			secauthsecret --set
 	Read Until		secrets >
 	${new_line}		Evaluate	chr(int(13))
@@ -36,22 +37,23 @@ Set dhchap
 	${wwn}			Get Value From User	Enter the wwn
 	Write			${wwn}
 	Read Until		Enter peer secret:
-	${peer}			Get Value From User	Enter peer secret
+	${peer}			Get Value From User	Enter peer secret	hidden=yes
 	Write                   ${peer}
 	Read Until		Re-enter peer secret:
-	${peer}                 Get Value From User	Re-enter peer secret:
+	${peer}                 Get Value From User	Re-enter peer secret:	hidden=yes
 	Write			${peer}
 	Read Until		Enter local secret:
-	${local}                Get Value From User	Enter local secret
+	${local}                Get Value From User	Enter local secret	hidden=yes
 	Write			${local}
 	Read Until		Re-enter local secret:
-	${local}                Get Value From User	Re-enter local secret
+	${local}                Get Value From User	Re-enter local secret	hidden=yes
 	Write			${local}
 	Read Until              (Leave blank when done):
 	Write Bare		${new_line}
 	Read Until		[no]
-	${y}                	Get Value From User		say yes/no
-	Write			${y}
+	${input}		Get Selection From User		Authentication: on/off	 yes	no
+#	Pause Execution		Do you want to continue ?
+	Write			${input}
 	Read Until Prompt
 
 dhchap auth
@@ -87,12 +89,20 @@ dhchap remove
 	Write			echo y | secauthsecret --remove -all
 	Read Until Prompt
 
+Grep string
+	[Documentation]		Grep the string from the given file
+	[Tags]			test10
+	${ss}			Get File	SLOT1cp-Edge_Alleg_10-10.20.113.10-201610252232-SUPPORTSHOW_ALL
+	${str_in}		Get Value From User	Enter the string to be grep
+	${out}			Get Lines Containing String	${ss}	${str_in}	case_insensitive=yes
+	Log			${out}
+
 *** Keywords ***
 Init
         [Documentation]         This is telnet login testing...
         [Tags]                  test1
-        Open Connection         10.38.18.78
-        Login                   root                    password
+        Open Connection         10.38.18.79
+        Login                   root                  	fibranne 
         Set Prompt              (root>)         prompt_is_regexp=yes
         ${CTRL_C}               Evaluate                chr(int(3))
         Set Timeout             10s
@@ -104,7 +114,7 @@ Cleanall
 	Run Keyword	Close All Connections
 	Run Keyword	Take Screenshot		mypic
 
-Mybug
+Terminate
         Set Prompt              (root>)         prompt_is_regexp=yes
         ${CTRL_C}               Evaluate                chr(int(3))
 	Run Keyword If Test Failed	Write Bare	${CTRL_C}
